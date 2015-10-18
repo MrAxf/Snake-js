@@ -36,9 +36,9 @@ var State = function(){
   this.curMove = MOVE_EAST;
   this.nextMove = MOVE_EAST;
 
-  this.imageBackground = new Image();
-  this.imageSnake = new Image();
-  this.imageFood = new Image();
+  this.imageBackground = new Image(960, 560);
+  this.imageSnake = new Image(160, 160);
+  this.imageFood = new Image(80, 40);
 
   this.init = function(){
 
@@ -80,6 +80,11 @@ var State = function(){
     this.imageSnake.src = "images/SnakeBodySprites.png";
     this.imageFood.src = "images/Apple.png";
 
+    this.snakeSprite = new Sprite(this.imageSnake, 4, 4);
+    this.foodSprite = new Sprite(this.imageFood, 1, 2);
+
+    this.animateFood = new Animation(this.foodSprite, 0, 1, 20);
+
   };
 
   this.render = function(ctx){
@@ -87,12 +92,13 @@ var State = function(){
     for(i = 1; i <= 15; i++)
       for(j = 1; j <= 11; j++){
         if(this.board[j][i].equals(FREE_BOX)) continue;
-        else if(this.board[j][i].x > 3) ctx.drawImage(this.imageFood, 0, 0, 40, 40, 20 + (40 * i), 20 + (40 * j), 40, 40);
-        else ctx.drawImage(this.imageSnake, this.board[j][i].y * 40, this.board[j][i].x * 40, 40, 40, 20 + (40 * i), 20 + (40 * j), 40, 40);
+        else if(this.board[j][i].x > 3) this.animateFood.render(ctx, 20 + (40 * i), 20 + (40 * j));
+        else this.snakeSprite.render(ctx, 20 + (40 * i), 20 + (40 * j), this.board[j][i].x, this.board[j][i].y);
       }
   };
 
   this.update = function() {
+    this.animateFood.update();
     if(!this.snakeCrash){
 		  if (!this.fruitOnBoard) this.generateFruit();
 		  this.speedCount--;

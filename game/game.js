@@ -1,4 +1,3 @@
-//Object Game
 var Game = function(width, height, scale, tps, fps, canvas){
 
 	this.width = width;
