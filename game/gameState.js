@@ -9,7 +9,7 @@ var Point = function(x, y){
   };
 };
 /*jshint esnext: true */
-var State = function(){
+var GameState = function(game){
   const MOVE_NORTH = new Point(0, -1);
   const MOVE_EAST = new Point(1, 0);
   const MOVE_SOUTH = new Point(0, 1);
@@ -19,6 +19,8 @@ var State = function(){
   const FREE_BOX = new Point(5, 0);
   const WALL_BOX = new Point(6, 0);
 
+  this.game = game;
+
   this.board = [];
   this.freeBoxes = new LinkedList();
   this.moveBuffer = [];
@@ -26,9 +28,10 @@ var State = function(){
   this.snakeCrash = false;
   this.tailMustMove = true;
   this.fruitOnBoard = false;
+  this.gameStart = false;
 
   this.speed = 14;
-  this.speedCount = 14;
+  this.speedCount = 120;
 
   this.headIterator = new Point(3, 6);
   this.tailIterator = new Point(0, 6);
@@ -98,15 +101,24 @@ var State = function(){
   };
 
   this.update = function() {
-    this.animateFood.update();
-    if(!this.snakeCrash){
-		  if (!this.fruitOnBoard) this.generateFruit();
-		  this.speedCount--;
-		  if (this.speedCount === 0) {
-			     this.updateCurMove();
-           if (this.tailMustMove) this.moveTail();
-           this.tailMustMove = this.moveHead();
-           this.speedCount = this.speed;
+    if(!this.gameStart){
+      this.speedCount--;
+      if(this.speedCount === 0){
+        this.speedCount = this.speed;
+        this.gameStart = true;
+      }
+    }else {
+      this.updateInputs();
+      this.animateFood.update();
+      if(!this.snakeCrash){
+        if (!this.fruitOnBoard) this.generateFruit();
+		    this.speedCount--;
+		    if (this.speedCount === 0) {
+          this.updateCurMove();
+          if (this.tailMustMove) this.moveTail();
+          this.tailMustMove = this.moveHead();
+          this.speedCount = this.speed;
+        }
       }
     }
 	};
@@ -214,10 +226,10 @@ var State = function(){
 	};
 
   this.updateInputs = function() {
-    if (keystate[38]) this.nextMove = MOVE_NORTH;
-		else if(keystate[39]) this.nextMove = MOVE_EAST;
-		else if(keystate[40]) this.nextMove = MOVE_SOUTH;
-		else if(keystate[37]) this.nextMove = MOVE_WEST;
+    if (keydownLastUpdate[38]) this.nextMove = MOVE_NORTH;
+		else if(keydownLastUpdate[39]) this.nextMove = MOVE_EAST;
+		else if(keydownLastUpdate[40]) this.nextMove = MOVE_SOUTH;
+		else if(keydownLastUpdate[37]) this.nextMove = MOVE_WEST;
 	};
 
 };

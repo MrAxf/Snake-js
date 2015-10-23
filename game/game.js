@@ -10,7 +10,7 @@ var Game = function(width, height, scale, tps, fps, canvas){
 	this.canvas = canvas;
 	this.ctx = canvas.getContext("2d");
 	this.running = false;
-	this.state = new State();
+	this.state = new GameState(this);
 	this.state.init();
 
 	this.update = function(){
@@ -43,6 +43,7 @@ simpleLoop = function(){
 	delta = now - then;
 	if (delta > interval) {
 		update();
+		updateInputs();
 		render();
 		then = now - (delta % interval);
 	}
@@ -55,9 +56,9 @@ fpsUnlimitedLoop = function(){
 	then = now;
 	while(1000/g.tps < lag){
 		update();
+		updateInputs();
 		lag -= 1000/g.tps;
 	}
-	g.state.updateInputs();
 	render();
 };
 
@@ -69,6 +70,7 @@ fpsLockedLoop = function(){
 	then = now;
 	while(1000/g.tps < lag){
 		update();
+		updateInputs();
 		lag -= 1000/g.tps;
 	}
 	if (delta > interval) {

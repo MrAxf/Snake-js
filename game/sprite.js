@@ -8,7 +8,7 @@ var Sprite = function(image, rows, cols){
   console.log(this.widthPerSection);
 
   this.render = function(ctx, x, y, row, col){
-    ctx.drawImage(this.image, col * this.widthPerSection, row * this.heightPerSection, 40, 40, x, y, 40, 40);
+    ctx.drawImage(this.image, col * this.widthPerSection, row * this.heightPerSection, this.widthPerSection, this.heightPerSection, x, y, this.widthPerSection, this.heightPerSection);
   };
 
 };
