@@ -1,6 +1,9 @@
 var keystate = [];
 var keydownLastUpdate = [];
-var event = event || window.event;
+var mousePos = {
+  x:0,
+  y:0
+};
 
 document.addEventListener("keydown", function(evt) {
   keystate[evt.keyCode] = true;
@@ -11,23 +14,21 @@ document.addEventListener("keyup", function(evt) {
 	delete keystate[evt.keyCode];
 });
 
-document.addEventListener("onmousedown", function(evt) {
-  keystate[evt.keyCode] = true;
+document.addEventListener("mousedown", function(evt) {
+  keystate[evt.button] = true;
   keydownLastUpdate[evt.button] = true;
 });
 
-document.addEventListener("onmouseup", function(evt) {
+document.addEventListener("mouseup", function(evt) {
 	delete keystate[evt.button];
+});
+
+document.addEventListener("mousemove", function(evt) {
+  rect = g.canvas.getBoundingClientRect();
+  mousePos.x = evt.clientX - rect.left;
+  mousePos.y = evt.clientY - rect.top;
 });
 
 var updateInputs = function() {
   keydownLastUpdate = [];
-};
-
-var getMousePos = function() {
-  var rect = g.canvas.getBoundingClientRect();
-  return {
-    x: event.clientX - rect.left,
-    y: event.clientY - rect.top
-  };
 };

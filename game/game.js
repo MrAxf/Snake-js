@@ -10,7 +10,7 @@ var Game = function(width, height, scale, tps, fps, canvas){
 	this.canvas = canvas;
 	this.ctx = canvas.getContext("2d");
 	this.running = false;
-	this.state = new GameState(this);
+	this.state = new MenuState(this);
 	this.state.init();
 
 	this.update = function(){
@@ -19,6 +19,11 @@ var Game = function(width, height, scale, tps, fps, canvas){
 
 	this.render = function(){
 		this.state.render(this.ctx);
+	};
+
+	this.loadState = function(state){
+		this.state = state;
+		this.state.init();
 	};
 };
 

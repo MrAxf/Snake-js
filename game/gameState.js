@@ -42,6 +42,8 @@ var GameState = function(game){
   this.imageBackground = new Image(960, 560);
   this.imageSnake = new Image(160, 160);
   this.imageFood = new Image(80, 40);
+  this.imageStart = new Image(485, 136);
+  this.imageGameOver = new Image(325, 135);
 
   this.init = function(){
 
@@ -82,9 +84,12 @@ var GameState = function(game){
     this.imageBackground.src = "images/GameBG.png";
     this.imageSnake.src = "images/SnakeBodySprites.png";
     this.imageFood.src = "images/Apple.png";
+    this.imageStart.src = "images/GameStart.png";
+    this.imageGameOver.src = "images/GameOver.png";
 
     this.snakeSprite = new Sprite(this.imageSnake, 4, 4);
     this.foodSprite = new Sprite(this.imageFood, 1, 2);
+    this.spriteStart = new Sprite(this.imageStart, 2, 1);
 
     this.animateFood = new Animation(this.foodSprite, 0, 1, 20);
 
@@ -92,12 +97,17 @@ var GameState = function(game){
 
   this.render = function(ctx){
     ctx.drawImage(this.imageBackground, 0, 0);
-    for(i = 1; i <= 15; i++)
-      for(j = 1; j <= 11; j++){
-        if(this.board[j][i].equals(FREE_BOX)) continue;
-        else if(this.board[j][i].x > 3) this.animateFood.render(ctx, 20 + (40 * i), 20 + (40 * j));
-        else this.snakeSprite.render(ctx, 20 + (40 * i), 20 + (40 * j), this.board[j][i].x, this.board[j][i].y);
+    if(!this.gameStart){
+      this.spriteStart.render(ctx, 117, 142, (this.speedCount < 31)?1:0, 0);
+    }
+    if(!this.snakeCrash) {
+      for(i = 1; i <= 15; i++)
+        for(j = 1; j <= 11; j++){
+          if(this.board[j][i].equals(FREE_BOX)) continue;
+          else if(this.board[j][i].x > 3) this.animateFood.render(ctx, 20 + (40 * i), 20 + (40 * j));
+          else this.snakeSprite.render(ctx, 20 + (40 * i), 20 + (40 * j), this.board[j][i].x, this.board[j][i].y);
       }
+    }else ctx.drawImage(this.imageGameOver, 199, 217);
   };
 
   this.update = function() {
@@ -107,19 +117,20 @@ var GameState = function(game){
         this.speedCount = this.speed;
         this.gameStart = true;
       }
-    }else {
+    }else if(!this.snakeCrash){
       this.updateInputs();
       this.animateFood.update();
-      if(!this.snakeCrash){
-        if (!this.fruitOnBoard) this.generateFruit();
-		    this.speedCount--;
-		    if (this.speedCount === 0) {
-          this.updateCurMove();
-          if (this.tailMustMove) this.moveTail();
-          this.tailMustMove = this.moveHead();
-          this.speedCount = this.speed;
-        }
+      if (!this.fruitOnBoard) this.generateFruit();
+		  this.speedCount--;
+		  if (this.speedCount === 0) {
+        this.updateCurMove();
+        if (this.tailMustMove) this.moveTail();
+        this.tailMustMove = this.moveHead();
+        this.speedCount =(this.snakeCrash)?120:this.speed;//MODIFICAR
       }
+    }else {
+      this.speedCount--;
+      if(this.speedCount === 0) this.game.loadState(new MenuState(this.game));
     }
 	};
 
@@ -180,7 +191,7 @@ var GameState = function(game){
 			//scoreCount--;
 
 		if (this.board[this.headIterator.y][this.headIterator.x].equals(WALL_BOX) || this.board[this.headIterator.y][this.headIterator.x].x < 4) {
-			this.snakeCrash = true;
+      this.snakeCrash = true;
 			return toReturn;
 		}
 

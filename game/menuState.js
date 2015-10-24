@@ -28,9 +28,9 @@ var MenuState = function(game){
   };
 
   this.update = function(){
-    /*mousePos = getMousePos();
     if(this.startRec.containsPoint(mousePos.x, mousePos.y)) this.startState =1;
-    else this.startState = 0;*/
+    else this.startState = 0;
+    if(this.startState == 1 && keydownLastUpdate[0]) game.loadState(new GameState(this.game));
   };
 
   this.render = function(ctx){
