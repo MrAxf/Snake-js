@@ -9,7 +9,7 @@ var Point = function(x, y){
   };
 };
 /*jshint esnext: true */
-var GameState = function(game){
+var GameState = function(game, speed){
   const MOVE_NORTH = new Point(0, -1);
   const MOVE_EAST = new Point(1, 0);
   const MOVE_SOUTH = new Point(0, 1);
@@ -30,7 +30,7 @@ var GameState = function(game){
   this.fruitOnBoard = false;
   this.gameStart = false;
 
-  this.speed = 14;
+  this.speed = speed;
   this.speedCount = 120;
 
   this.headIterator = new Point(3, 6);
