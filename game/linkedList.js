@@ -6,17 +6,15 @@ var Node = function(){
 var LinkedList = function(){
 
   this.head = new Node();
-  this.last = null;
+  this.last = this.head;
   this.length = 0;
-  this.curNode = this.head;
 
   this.add = function(element){
     addNode = new Node();
     addNode.element = element;
-    addNode.next = this.curNode.next;
-    this.curNode.next = addNode;
-    if(addNode.next === null) this.last = addNode;
-    this.curNode = addNode;
+    addNode.next = this.last.next;
+    this.last.next = addNode;
+    this.last = addNode;
     this.length++;
   };
 
