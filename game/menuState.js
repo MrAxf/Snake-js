@@ -14,43 +14,48 @@ var MenuState = function(game){
 
   this.game = game;
 
-  this.selectDifficulty = false;
+  this.state = 0;
 
   this.imageBackground = new Image(960, 560);
   this.imageStartButton = new Image(812, 69);
   this.difficultyButtons = new Image(972, 207);
+  this.imageExtraButtons = new Image(200, 200);
 
   this.init = function(){
     this.imageBackground.src = "images/MenuBG.png";
     this.imageStartButton.src = "images/StartButton.png";
     this.difficultyButtons.src = "images/DifficultyButtons.png";
+    this.imageExtraButtons.src = "images/ExtraButtons.png";
 
-    spriteDifficultyButtons = new Sprite(this.difficultyButtons, 3, 2);
+    this.spriteDifficultyButtons = new Sprite(this.difficultyButtons, 3, 2);
 
-    this.startButton = createStartButton(this.game, new Sprite(this.imageStartButton, 1, 2), new Rectangle(277, 280, 406, 69), 277, 280, 0);
-    this.easyButton = createDifficultyButton(this.game, spriteDifficultyButtons, new Rectangle(319, 237, 322, 69), 238, 237, 0, 21);
-    this.normalButton = createDifficultyButton(this.game, spriteDifficultyButtons, new Rectangle(238, 333, 485, 69), 238, 333, 1, 14);
-    this.hardButton = createDifficultyButton(this.game, spriteDifficultyButtons, new Rectangle(319, 431, 322, 69), 238, 431, 2, 7);
+    this.startButton = createChangeStateButton(this.game, new Sprite(this.imageStartButton, 1, 2), new Rectangle(277, 280, 406, 69), 277, 280, 0, 1);
+    this.easyButton = createDifficultyButton(this.game, this.spriteDifficultyButtons, new Rectangle(319, 237, 322, 69), 238, 237, 0, 21);
+    this.normalButton = createDifficultyButton(this.game, this.spriteDifficultyButtons, new Rectangle(238, 333, 485, 69), 238, 333, 1, 14);
+    this.hardButton = createDifficultyButton(this.game, this.spriteDifficultyButtons, new Rectangle(319, 431, 322, 69), 238, 431, 2, 7);
+    this.backButton = createChangeStateButton(this.game, new Sprite(this.imageExtraButtons, 2, 2), new Rectangle(20, 313, 100, 100), 20, 313, 0, 0);
 
   };
 
   this.update = function(){
-    if(!this.selectDifficulty){
+    if(this.state === 0){
       this.startButton.update();
     }else {
       this.easyButton.update();
       this.normalButton.update();
       this.hardButton.update();
+      this.backButton.update();
     }
   };
 
   this.render = function(ctx){
     ctx.drawImage(this.imageBackground, 0, 0);
-    if(!this.selectDifficulty)this.startButton.render(ctx);
+    if(this.state === 0)this.startButton.render(ctx);
     else{
       this.easyButton.render(ctx);
       this.normalButton.render(ctx);
       this.hardButton.render(ctx);
+      this.backButton.render(ctx);
     }
   };
 

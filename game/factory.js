@@ -29,10 +29,18 @@ var createDifficultyButton = function(game, sprite, hitBox, x, y, row, speed){
   return button;
 };
 
-var createStartButton = function(game, sprite, hitBox, x, y, row){
+var createExitButton = function(game, sprite, hitBox, x, y, row){
   button = createMouseButton(game, sprite, hitBox, x, y, row);
   button.onClick = function() {
-    this.game.state.selectDifficulty = true;
+    this.game.loadState(new MenuState(this.game));
+  };
+  return button;
+};
+
+var createChangeStateButton = function(game, sprite, hitBox, x, y, row, newState){
+  button = createMouseButton(game, sprite, hitBox, x, y, row);
+  button.onClick = function() {
+    this.game.state.state = newState;
   };
   return button;
 };

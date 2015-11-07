@@ -25,10 +25,9 @@ var GameState = function(game, speed){
   this.freeBoxes = new LinkedList();
   this.moveBuffer = [];
 
-  this.snakeCrash = false;
   this.tailMustMove = true;
   this.fruitOnBoard = false;
-  this.gameStart = false;
+  this.state = 0;
 
   this.speed = speed;
   this.speedCount = 120;
@@ -44,6 +43,8 @@ var GameState = function(game, speed){
   this.imageFood = new Image(80, 40);
   this.imageStart = new Image(485, 136);
   this.imageGameOver = new Image(325, 135);
+  this.imagePause = new Image(404, 69);
+  this.imageExtraButtons = new Image(200, 200);
 
   this.init = function(){
 
@@ -86,10 +87,16 @@ var GameState = function(game, speed){
     this.imageFood.src = "images/Apple.png";
     this.imageStart.src = "images/GameStart.png";
     this.imageGameOver.src = "images/GameOver.png";
+    this.imagePause.src = "images/Pause.png";
+    this.imageExtraButtons.src = "images/ExtraButtons.png";
 
     this.snakeSprite = new Sprite(this.imageSnake, 4, 4);
     this.foodSprite = new Sprite(this.imageFood, 1, 2);
     this.spriteStart = new Sprite(this.imageStart, 2, 1);
+    this.spriteExtraButtons = new Sprite(this.imageExtraButtons, 2, 2);
+
+    this.backButton = createExitButton(this.game, this.spriteExtraButtons, new Rectangle(260, 352, 100, 100), 260, 352, 0);
+    this.resetButton = createDifficultyButton(this.game, this.spriteExtraButtons, new Rectangle(360, 352, 100, 100), 360, 352, 1, this.speed);
 
     this.animateFood = new Animation(this.foodSprite, 0, 1, 20);
 
@@ -97,27 +104,32 @@ var GameState = function(game, speed){
 
   this.render = function(ctx){
     ctx.drawImage(this.imageBackground, 0, 0);
-    if(!this.gameStart){
+    if(this.state === 0){
       this.spriteStart.render(ctx, 117, 142, (this.speedCount < 31)?1:0, 0);
     }
-    if(!this.snakeCrash) {
+    if(this.state != 3 && this.state != 2) {
       for(i = 1; i <= 15; i++)
         for(j = 1; j <= 11; j++){
           if(this.board[j][i].equals(FREE_BOX)) continue;
           else if(this.board[j][i].x > 3) this.animateFood.render(ctx, 20 + (40 * i), 20 + (40 * j));
           else this.snakeSprite.render(ctx, 20 + (40 * i), 20 + (40 * j), this.board[j][i].x, this.board[j][i].y);
       }
-    }else ctx.drawImage(this.imageGameOver, 199, 217);
+    }else if(this.state === 2) ctx.drawImage(this.imagePause, 158, 217);
+    else if(this.state === 3){
+      ctx.drawImage(this.imageGameOver, 199, 217);
+      this.backButton.render(ctx);
+      this.resetButton.render(ctx);
+    }
   };
 
   this.update = function() {
-    if(!this.gameStart){
+    if(this.state === 0){
       this.speedCount--;
       if(this.speedCount === 0){
         this.speedCount = this.speed;
-        this.gameStart = true;
+        this.state = 1;
       }
-    }else if(!this.snakeCrash){
+    }else if(this.state === 1){
       this.updateInputs();
       this.animateFood.update();
       if (!this.fruitOnBoard) this.generateFruit();
@@ -126,11 +138,13 @@ var GameState = function(game, speed){
         this.updateCurMove();
         if (this.tailMustMove) this.moveTail();
         this.tailMustMove = this.moveHead();
-        this.speedCount =(this.snakeCrash)?120:this.speed;//MODIFICAR
+        this.speedCount = this.speed;
       }
-    }else {
-      this.speedCount--;
-      if(this.speedCount === 0) this.game.loadState(new MenuState(this.game));
+    }else if (this.state === 2){
+      this.updateInputs();
+    }else if(this.state === 3){
+      this.backButton.update();
+      this.resetButton.update();
     }
 	};
 
@@ -191,7 +205,7 @@ var GameState = function(game, speed){
 			//scoreCount--;
 
 		if (this.board[this.headIterator.y][this.headIterator.x].equals(WALL_BOX) || this.board[this.headIterator.y][this.headIterator.x].x < 4) {
-      this.snakeCrash = true;
+      this.state = 3;
 			return toReturn;
 		}
 
@@ -237,10 +251,13 @@ var GameState = function(game, speed){
 	};
 
   this.updateInputs = function() {
-    if (keydownLastUpdate[38]) this.nextMove = MOVE_NORTH;
-		else if(keydownLastUpdate[39]) this.nextMove = MOVE_EAST;
-		else if(keydownLastUpdate[40]) this.nextMove = MOVE_SOUTH;
-		else if(keydownLastUpdate[37]) this.nextMove = MOVE_WEST;
+    if (this.state === 1){
+      if (keydownLastUpdate[38]) this.nextMove = MOVE_NORTH;
+		  else if(keydownLastUpdate[39]) this.nextMove = MOVE_EAST;
+		  else if(keydownLastUpdate[40]) this.nextMove = MOVE_SOUTH;
+		  else if(keydownLastUpdate[37]) this.nextMove = MOVE_WEST;
+    }
+    if (keydownLastUpdate[32] && (this.state === 1 || this.state === 2)) this.state = (this.state === 1)?2:1;
 	};
 
 };
