@@ -44,3 +44,29 @@ var createChangeStateButton = function(game, sprite, hitBox, x, y, row, newState
   };
   return button;
 };
+
+var createPointPanel = function(game, sprite, digits, x, y){
+
+  pointPanel = new Entity(game);
+  pointPanel.sprite = sprite;
+  pointPanel.digits = digits;
+  pointPanel.x = x;
+  pointPanel.y = y;
+  pointPanel.points = 0;
+
+  pointPanel.update = function(toAdd){
+    this.points += toAdd;
+  };
+  pointPanel.render = function(ctx){
+    separation = this.sprite.widthPerSection;
+    stringPoint = this.points.toString();
+    emptyDigits = digits - stringPoint.length;
+    for(i = 0; i < emptyDigits; i++){
+      this.sprite.render(ctx, this.x + (i*separation), this.y, 0, 0);
+    }
+    for(j = emptyDigits; j < this.digits; j++){
+      this.sprite.render(ctx, this.x + (j*separation), this.y, 0, parseInt(stringPoint.charAt(j - emptyDigits)));
+    }
+  };
+  return pointPanel;
+};

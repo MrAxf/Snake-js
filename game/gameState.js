@@ -31,6 +31,7 @@ var GameState = function(game, speed){
 
   this.speed = speed;
   this.speedCount = 120;
+  this.scoreCount = 100;
 
   this.headIterator = new Point(3, 6);
   this.tailIterator = new Point(0, 6);
@@ -45,6 +46,7 @@ var GameState = function(game, speed){
   this.imageGameOver = new Image(325, 135);
   this.imagePause = new Image(404, 69);
   this.imageExtraButtons = new Image(200, 200);
+  this.imagePoints = new Image(410, 35);
 
   this.init = function(){
 
@@ -89,17 +91,21 @@ var GameState = function(game, speed){
     this.imageGameOver.src = "images/GameOver.png";
     this.imagePause.src = "images/Pause.png";
     this.imageExtraButtons.src = "images/ExtraButtons.png";
+    this.imagePoints.src = "images/Numbers.png";
 
     this.snakeSprite = new Sprite(this.imageSnake, 4, 4);
     this.foodSprite = new Sprite(this.imageFood, 1, 2);
     this.spriteStart = new Sprite(this.imageStart, 2, 1);
     this.spriteExtraButtons = new Sprite(this.imageExtraButtons, 2, 2);
+    this.spriteNumbers = new Sprite(this.imagePoints, 1, 10);
 
     this.backButton = createExitButton(this.game, this.spriteExtraButtons, new Rectangle(260, 352, 100, 100), 260, 352, 0);
     this.resetButton = createDifficultyButton(this.game, this.spriteExtraButtons, new Rectangle(360, 352, 100, 100), 360, 352, 1, this.speed);
 
-    this.animateFood = new Animation(this.foodSprite, 0, 1, 20);
+    this.fruitsEaten = createPointPanel(this.game, this.spriteNumbers, 3, 720, 305);
+    this.score = createPointPanel(this.game, this.spriteNumbers, 5, 720, 120);
 
+    this.animateFood = new Animation(this.foodSprite, 0, 1, 20);
   };
 
   this.render = function(ctx){
@@ -120,6 +126,8 @@ var GameState = function(game, speed){
       this.backButton.render(ctx);
       this.resetButton.render(ctx);
     }
+    this.score.render(ctx);
+    this.fruitsEaten.render(ctx);
   };
 
   this.update = function() {
@@ -199,10 +207,11 @@ var GameState = function(game, speed){
 		if (this.board[this.headIterator.y][this.headIterator.x].equals(FRUIT_BOX)) {
 			this.fruitOnBoard = false;
 			toReturn = false;
-			//score += scoreCount;
-			//scoreCount = 100;
-		} //else if (scoreCount != 0)
-			//scoreCount--;
+			this.score.update(this.scoreCount);
+			this.scoreCount = 100;
+      this.fruitsEaten.update(1);
+		} else if (this.scoreCount !== 0)
+			this.scoreCount--;
 
 		if (this.board[this.headIterator.y][this.headIterator.x].equals(WALL_BOX) || this.board[this.headIterator.y][this.headIterator.x].x < 4) {
       this.state = 3;
